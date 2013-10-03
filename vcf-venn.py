@@ -32,8 +32,11 @@ import itertools
 import doctest
 import argparse
 
-parser = argparse.ArgumentParser()
+#################
+#parse arguments#
+#################
 
+parser = argparse.ArgumentParser()
 
 parser.add_argument("-f", "--file", dest="filename", help="write report to FILE", metavar="FILE", required=True, action='append')
 parser.add_argument("-p", "--prefix", dest="pref", help="prefix for output vcf name", metavar="string", required=True)
@@ -89,7 +92,13 @@ def make_file_combinations(num_files):
 
 def main():
     
+    #first we need to make a dictionary of the list of files.
+    #we use make_file_dictionary for this
+    file_dict = make_file_dictionary(args.filename)
     
+    #now we need to make the combinations list for the comparisons
+    #and we give it the length of the filename arguement here
+    combo_list = make_file_combinations(len(args.filename))
     
     return 0
 
