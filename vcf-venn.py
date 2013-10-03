@@ -132,7 +132,8 @@ def vcf_parser(file_dict):
 
 def vcf_combo_writer(prefix, directory, combo_list, compare_dict):
     '''
-    subroutine which looks into
+    subroutine which looks into comparison dictionary and writes vcf output
+    files based on different combinations (combo list)
     '''
     for combination in combo_list:
         #print combination
