@@ -1,0 +1,2 @@
+vcf-venn:
+A tool to compare variants contained within multiple vcf format files, to determine common and unique variants to each file.  To write these variants to a new file also in vcf format.
