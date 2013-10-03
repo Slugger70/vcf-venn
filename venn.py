@@ -11,4 +11,5 @@ parser.add_argument("-d", "--dir", dest="out_dir", default="venn_results/", help
 
 args = parser.parse_args()
 
-print args
+if len(args.filename) < 2:
+  raise argparse.ArgumentTypeError("This program requires at least 2 files")

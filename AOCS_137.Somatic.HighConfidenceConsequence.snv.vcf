@@ -7,9 +7,9 @@
 ##INFO=<ID=TYPE,Type=String,Description="Variant classification annotation">
 ##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SAMPLE
-3	171377090	.	T	C	.	File1Only	GENE=PLD1;TYPE=Splice_Site	GT	0/1
-5	140554539	.	C	T	.	File1Only	GENE=PCDHB7;TYPE=Missense_Mutation	GT	0/1
-8	145748768	.	G	C	.	File1Only	GENE=LRRC24;TYPE=Silent	GT	0/1
+chr3	171377090	.	T	C	.	File1Only	GENE=PLD1;TYPE=Splice_Site	GT	0/1
+chr5	140554539	.	C	T	.	File1Only	GENE=PCDHB7;TYPE=Missense_Mutation	GT	0/1
+chr8	145748768	.	G	C	.	File1Only	GENE=LRRC24;TYPE=Silent	GT	0/1
 19	12801014	.	T	A	.	File1Only	GENE=FBXW9;TYPE=Splice_Site	GT	0/1
 1	145014280	.	A	G	.	File1Only	GENE=PDE4DIP;TYPE=Silent	GT	0/1
 9	39099934	.	G	C	.	File1Only	GENE=CNTNAP3;TYPE=Missense_Mutation	GT	0/1
