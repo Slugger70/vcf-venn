@@ -83,8 +83,32 @@ def make_file_combinations(num_files):
             combos.append(list(j))
     return combos
 
+def vcf_parser(file_dict):
+    '''
+    subroutine to take in a file dictionary (keyed by an integer)
+    and parse each file in turn into a vcf_dictionary. The vcf_dict
+    is structured as follows:
+        Key - chromosome:postion:altAllele (separator “:”)
+        value - array:  [0]: a list of file numbers in which this snv occurs
+                        [1]: the vcf line in file if the same, no meta-data if different (cut down line instead)
+    
+    Tests:
+    
+    
+    '''
+    pass
 
+def vcf_combo_writer(out_prefix, out_dir, combo_list, vcf_dict):
+    '''
+    
+    '''
+    pass
 
+def make_venn_output(combo_list, vcf_dict):
+    '''
+    
+    '''
+    pass
 
 ######
 #main#
@@ -99,6 +123,15 @@ def main():
     #now we need to make the combinations list for the comparisons
     #and we give it the length of the filename arguement here
     combo_list = make_file_combinations(len(args.filename))
+    
+    #parse the vcf files into the vcf_dictionary!
+    vcf_dict = vcf_parser(file_dict)
+    
+    #make the venn output
+    venn_out = make_venn_output(combo_list, vcf_dict)
+    
+    #write the vcf files out
+    vcf_combo_writer(out_prefix, out_dir, combo_list, vcf_dict)
     
     return 0
 
