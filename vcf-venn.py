@@ -118,13 +118,13 @@ def vcf_parser(file_dict):
 	  if compare_dict.has_key(identifier):
 	    #print "has key"
 	    compare_dict[identifier][0].append(key)
-	    compare_dict[identifier][1].append(line.strip())
+	    compare_dict[identifier][1].append(line)
 	    
 	  else:
 	    compare_dict[identifier] = []
 	    compare_dict[identifier].extend([[],[]])
 	    compare_dict[identifier][0].append(key)
-	    compare_dict[identifier][1].append(line.strip())
+	    compare_dict[identifier][1].append(line)
     
     return compare_dict
 
@@ -140,10 +140,23 @@ def vcf_combo_writer(out_prefix, out_dir, combo_list, vcf_dict):
 
 def make_venn_output(combo_list, vcf_dict):
     '''
-    Produces a dictionary of the filename combinations and the number of snvs unique to each.
+    Produces a dictionary of the filename combinations and the number of snvs unique to each 
+    and returns it.
     '''
+    count_dict = {}
+    for i in combo_list:
+        count_dict[str(i)] = 0
     
-    pass
+    for i in combo_list:
+        for x in vcf_dict.values():
+            combo,lines = x
+            if combo == i:
+                count_dict[str(i)] += 1
+            
+    #print count_dict
+    return count_dict
+
+
 
 ######
 #main#
@@ -166,36 +179,40 @@ def main():
     for i in args.filename:
         if not os.path.isfile(i):
             raise Exception("Filename " + i + " doesn't exist!")
-        
+
     sys.stderr.write("Make output directory\n")
-    #make the output directory
+    #make the output directory checking for its existence first.
     if(os.path.isdir(args.out_dir)):
         raise Exception("Output directory already exists, will not overwrite. Exiting.")
     else:
-        os.mkdir(out_dir)
-    
+        os.mkdir(args.out_dir)
+
     #first we need to make a dictionary of the list of files.
     #we use make_file_dictionary for this
     sys.stderr.write("Producing the file dictionary\n")
     file_dict = make_file_dictionary(args.filename)
-    
+
     sys.stderr.write("Producing list of file combinations\n")
     #now we need to make the combinations list for the comparisons
     #and we give it the length of the filename arguement here
     combo_list = make_file_combinations(len(args.filename))
-    
+
     sys.stderr.write("Parsing the vcf files\n")
     #parse the vcf files into the vcf_dictionary!
     vcf_dict = vcf_parser(file_dict)
-    
+
     sys.stderr.write("Writing the venn diagram output\n")
     #make the venn output
     venn_out = make_venn_output(combo_list, vcf_dict)
-    
+    file = open(os.path.join(args.out_dir, "venn-out.txt"), "w")
+    for c in venn_out:
+        file.write(str(c) + "," + str(venn_out[c]) + "\n")
+    file.close()
+
     sys.stderr.write("Writing the output files\n")
     #write the vcf files out
     vcf_combo_writer(args.pref, args.out_dir, combo_list, vcf_dict)
-    
+
     return 0
 
 if __name__ == '__main__':
