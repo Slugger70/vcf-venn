@@ -130,11 +130,23 @@ def vcf_parser(file_dict):
 
 #-----------------------------------------------------
 
-def vcf_combo_writer(out_prefix, out_dir, combo_list, vcf_dict):
+def vcf_combo_writer(prefix, directory, combo_list, compare_dict):
     '''
     subroutine which looks into
     '''
-    pass
+    for combination in combo_list:
+        #print combination
+        file=open(os.path.join(directory, prefix + "." + "V".join([str(x) for x in combination]) + ".vcf"), 'w')
+        for val in compare_dict.values():
+            combo, lines  = val
+            if len(combo) > 1:
+                #print "need to compare the lines", combo
+                _compare_lines = 0
+            if combo == combination:
+                #print combo, combination
+                #print lines[0]
+                file.write(lines[0])
+        file.close()
 
 #-----------------------------------------------------
 
