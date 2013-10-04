@@ -32,6 +32,7 @@ import itertools
 import doctest
 import argparse
 import os
+import datetime
 
 #################
 #parse arguments#
@@ -102,52 +103,73 @@ def vcf_parser(file_dict):
     
     '''
     compare_dict={}
+    header = []
     for key, value in file_dict.iteritems():
       print key, value
       file=open(value, 'r')
       for line in file:
 	if line.startswith('#'):
-	  _header=line
+	  if "<" in line:
+	    header.append(line)
 	else:
+	  if line.startswith("chr"):
+        #print line
+	    line = line.replace('chr', '')
+	    #print CHROM
 	  CHROM, POS, ID, REF,ALT = line.strip().split()[:5]
-	  if CHROM.startswith("chr"):
-	    #print CHROM
-	    CHROM = CHROM.replace('chr', '')
-	    #print CHROM
 	  identifier=CHROM+":"+POS+":"+ALT
 	  if compare_dict.has_key(identifier):
 	    #print "has key"
 	    compare_dict[identifier][0].append(key)
-	    compare_dict[identifier][1].append(line)
+	    #print compare_dict[identifier][1][0]
+	    if line == compare_dict[identifier][1][0]:
+	    	_sameLine =1
+	    	#print "same"
+	    else:
+	    	#compare_dict[identifier][1].append(line)
+	    	#print "remove meta data"
+	    	new_line = CHROM+"\t"+POS+"\t"+ID+"\t"+REF+"\t"+ALT+"\t.\t.\t.\t.\t.\n"
+	    	#print new_line
+	    	compare_dict[identifier][1] = []
+	    	compare_dict[identifier][1].append(new_line)
+	    	
 	    
 	  else:
 	    compare_dict[identifier] = []
 	    compare_dict[identifier].extend([[],[]])
 	    compare_dict[identifier][0].append(key)
 	    compare_dict[identifier][1].append(line)
-    
-    return compare_dict
+    #print compare_dict
+    header = sorted(set(header))
+    #print "".join([str(x) for x in header])
+    return compare_dict, header
 
 #-----------------------------------------------------
 
-def vcf_combo_writer(prefix, directory, combo_list, compare_dict):
-    '''
-    subroutine which looks into comparison dictionary and writes vcf output
-    files based on different combinations (combo list)
-    '''
-    for combination in combo_list:
-        #print combination
-        file=open(os.path.join(directory, prefix + "." + "V".join([str(x) for x in combination]) + ".vcf"), 'w')
-        for val in compare_dict.values():
-            combo, lines  = val
-            if len(combo) > 1:
-                #print "need to compare the lines", combo
-                _compare_lines = 0
-            if combo == combination:
-                #print combo, combination
-                #print lines[0]
-                file.write(lines[0])
-        file.close()
+def vcf_combo_writer(prefix, directory, combo_list, compare_dict, header):
+	'''
+	subroutine which looks into comparison dictionary and writes vcf output
+	files based on different combinations (combo list)
+	'''
+	for combination in combo_list:
+		#print combination
+		file=open(os.path.join(directory, prefix + "." + "V".join([str(x) for x in combination]) + ".vcf"), 'w')
+		file.write("##fileformat=VCFv4.0\n")
+		today = datetime.date.today()
+		file.write("##fileDate="+today.strftime('%d%m%Y\n'))
+		file.write("".join([str(x) for x in header]))
+		file.write("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tSAMPLE\n")
+		for val in compare_dict.values():
+			combo, lines  = val
+			if combo == combination:
+				#print combo, combination
+				if len(lines) > 1:
+					print "need to compare the lines", lines
+					_compare_lines = 0
+				else:
+					#print lines[0]
+					file.write(lines[0])
+		file.close()
 
 #-----------------------------------------------------
 
@@ -212,7 +234,7 @@ def main():
 
     sys.stderr.write("Parsing the vcf files\n")
     #parse the vcf files into the vcf_dictionary!
-    vcf_dict = vcf_parser(file_dict)
+    vcf_dict, header = vcf_parser(file_dict)
 
     sys.stderr.write("Writing the venn diagram output\n")
     #make the venn output
@@ -224,7 +246,7 @@ def main():
 
     sys.stderr.write("Writing the output files\n")
     #write the vcf files out
-    vcf_combo_writer(args.pref, args.out_dir, combo_list, vcf_dict)
+    vcf_combo_writer(args.pref, args.out_dir, combo_list, vcf_dict, header)
 
     return 0
 
